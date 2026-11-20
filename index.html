@@ -6,219 +6,196 @@
   <title>委託資訊與需求表</title>
   <style>
     :root {
-      --bg: #f7f6f2;
-      --surface: #ffffff;
-      --surface-alt: #f1efe9;
-      --text: #1f1e1c;
-      --muted: #68655e;
-      --border: #e2dfd7;
-      --accent: #003c64;
-      --accent-hover: #002b48;
-      --accent-soft: #e3eff7;
-      --ok: #003c64;
-      --radius: 14px;
+      --bg: #faf9f6;
+      --card: #ffffff;
+      --soft: #f2efe9;
+      --text: #22201e;
+      --muted: #6b665f;
+      --line: #e6e1d8;
+      --accent: #355e52;
+      --accent-dark: #26463d;
+      --accent-bg: #e7f0ed;
+      --ok: #1e6b4b;
+      --closed-bg: #fff3dc;
+      --closed-text: #8a5300;
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 20px 14px;
+      padding: 18px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
     }
 
-    main {
-      max-width: 720px;
+    .page {
+      max-width: 780px;
       margin: 0 auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      display: grid;
+      gap: 16px;
+    }
+
+    .box {
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: 20px;
     }
 
-    header {
+    .hero { padding: 0; overflow: hidden; }
+
+    .banner {
+      height: 140px;
+      background: linear-gradient(120deg, #dce8e3 0%, #efe6d8 55%, #e3ddd3 100%);
+      padding: 16px 20px;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: flex-start;
-      gap: 12px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 1.25rem;
-    }
-
-    header p {
-      margin: 4px 0 0;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .status-pill {
+    .status {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 6px 12px;
       border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    .block {
-      margin-top: 18px;
-    }
-
-    .block-title {
-      font-size: 0.92rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--accent);
     }
 
-    .options-grid {
+    .status.closed { color: var(--closed-text); background: var(--closed-bg); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+    .hero-body { padding: 18px 22px 22px; }
+    .hero-body h1 { margin: 0; font-size: 1.35rem; letter-spacing: 0.02em; }
+    .hero-body p { margin: 8px 0 0; color: var(--muted); font-size: 0.93rem; }
+
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .sec-title { margin: 0; font-size: 1rem; font-weight: 700; }
+    .sec-hint { font-size: 0.82rem; color: var(--muted); }
+
+    .plans {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
     }
 
-    .opt-card {
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
+    .plan-card {
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
       background: var(--bg);
       cursor: pointer;
       transition: 0.15s ease;
       user-select: none;
     }
 
-    .opt-card.active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+    .plan-card:hover { border-color: var(--accent); }
+    .plan-card.selected { background: var(--accent-bg); border-color: var(--accent); }
+    .plan-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .plan-name { font-weight: 700; font-size: 0.95rem; }
+    .plan-price { color: var(--accent); font-weight: 700; font-size: 0.88rem; margin: 4px 0 6px; }
+    .plan-desc { margin: 0; font-size: 0.84rem; color: var(--muted); }
+
+    input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
+
+    .addons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      font-size: 0.84rem;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .opt-top {
+    .chip.selected {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .summary-bar {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--soft);
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
-      font-weight: 700;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
     }
 
-    .opt-price {
-      color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-top: 4px;
-    }
+    .err { color: #b42318; font-size: 0.84rem; margin-top: 8px; display: none; }
 
-    input[type="checkbox"] {
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .field {
-      margin-top: 12px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+    form { display: grid; gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    label.lbl { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
 
     input[type="text"], input[type="email"], textarea {
       width: 100%;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       font-size: 0.92rem;
       font-family: inherit;
       background: #fff;
       color: var(--text);
     }
 
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
+    textarea { min-height: 92px; resize: vertical; }
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; }
 
     button {
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 10px 16px;
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
     }
 
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
+    .btn-main { background: var(--accent); color: #fff; }
+    .btn-main:hover { background: var(--accent-dark); }
+    .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-sub { background: var(--soft); color: var(--text); }
 
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-secondary {
-      background: var(--surface-alt);
-      color: var(--text);
-    }
-
-    .notice {
+    .result {
       margin-top: 14px;
-      font-size: 0.83rem;
-      color: var(--muted);
-    }
-
-    section[aria-label="委託摘要"] {
-      margin-top: 16px;
       padding: 14px;
-      border-radius: 10px;
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--soft);
+      display: none;
     }
 
-    .summary-head {
+    .result.show { display: block; }
+
+    .result-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 8px;
       font-size: 0.86rem;
@@ -226,127 +203,348 @@
       color: var(--ok);
     }
 
-    .summary-head.error {
-      color: #b42318;
-    }
+    .result-top.fail { color: #b42318; }
 
     pre {
       margin: 0;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 10px;
       background: #fff;
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
       white-space: pre-wrap;
       word-break: break-word;
       font-family: inherit;
       font-size: 0.88rem;
     }
 
-    .confirm-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      margin-top: 12px;
-    }
+    .rules { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.88rem; }
+    .rules li + li { margin-top: 6px; }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 
-    a.mail-btn {
+    .link-pill {
       display: inline-block;
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--text);
       text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
     }
 
-    a.mail-btn:hover {
-      text-decoration: underline;
-    }
+    .link-pill:hover { background: var(--accent-bg); color: var(--accent); }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <div>
-        <h1>委託資訊與需求表</h1>
-        <p>勾選項目並填寫資料後，先產生內容確認，再一鍵寄送至信箱。</p>
-      </div>
-      <div class="status-pill">
-        <span class="status-dot" aria-hidden="true"></span>
-        <span>目前開放委託</span>
-      </div>
-    </header>
-
-    <form id="commissionForm">
-      <div class="block">
-        <div class="block-title">委託項目（可複選）</div>
-        <div id="itemsGrid" class="options-grid"></div>
-      </div>
-
-      <div class="two-col">
-        <div>
-          <label for="nameInput">稱呼 / 社群聯絡方式 *</label>
-          <input id="nameInput" type="text" required placeholder="例如：小明（@xxx）" />
-        </div>
-        <div>
-          <label for="emailInput">你的回信 Email *</label>
-          <input id="emailInput" type="email" required placeholder="例如：client@example.com" />
+  <div class="page">
+    <section class="box hero">
+      <div class="banner">
+        <div id="statusBadge" class="status">
+          <span class="dot"></span>
+          <span id="statusText"></span>
         </div>
       </div>
-
-      <div class="two-col">
-        <div>
-          <label for="deadlineInput">期望交期</label>
-          <input id="deadlineInput" type="text" placeholder="例如：2026/12 中旬前" />
-        </div>
-        <div>
-          <label for="budgetInput">預算範圍</label>
-          <input id="budgetInput" type="text" placeholder="例如：NT$ 1,500 - 3,000 或可議" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="detailInput">需求說明 *</label>
-        <textarea id="detailInput" required placeholder="請簡述需求內容、風格或參考方向..."></textarea>
-      </div>
-
-      <div class="actions">
-        <button type="submit" class="btn-primary">產生委託摘要（確認內容）</button>
-        <button type="reset" class="btn-secondary">清空</button>
-      </div>
-    </form>
-
-    <p class="notice">按下「產生委託摘要」後會先顯示確認內容，核對無誤再按「確認無誤，寄出至 Email」即可寄送。</p>
-
-    <section aria-label="委託摘要" id="summarySection" hidden>
-      <div class="summary-head" id="summaryHead">
-        <span role="status" id="statusMessage">請確認下方委託內容，無誤後即可寄出至信箱</span>
-        <button type="button" class="btn-secondary" id="copySummaryBtn">複製摘要</button>
-      </div>
-      <pre id="summaryOutput"></pre>
-      <div class="confirm-bar">
-        <button type="button" class="btn-primary" id="confirmSendBtn">確認無誤，寄出至 Email</button>
-        <a id="mailtoAction" class="mail-btn" href="mailto:">或開啟預設信箱寄出 →</a>
+      <div class="hero-body">
+        <h1 id="siteTitle"></h1>
+        <p id="siteIntro"></p>
       </div>
     </section>
-  </main>
+    <section class="box">
+      <div class="sec-head">
+        <h2 class="sec-title">委託項目（可複選）</h2>
+        <span class="sec-hint">點選卡片可勾選多個項目</span>
+      </div>
+      <div id="plansGrid" class="plans"></div>
+      <div id="selectErr" class="err">請至少勾選一項委託項目。</div>
+
+      <div id="addonsWrap" class="addons"></div>
+
+      <div class="summary-bar">
+        <span>已勾選：<strong id="countNum">0</strong> 項</span>
+        <span id="pricePreview">尚未選擇項目</span>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--line);margin:18px 0;" />
+
+      <form id="reqForm">
+        <div class="grid-2">
+          <div>
+            <label class="lbl" for="who">稱呼 / 社群聯絡方式 *</label>
+            <input id="who" type="text" required placeholder="例如：阿明（IG / X @xxx）" />
+          </div>
+          <div>
+            <label class="lbl" for="replyEmail">你的回信信箱 *</label>
+            <input id="replyEmail" type="email" required placeholder="例如：client@example.com" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label class="lbl" for="when">期望交期</label>
+            <input id="when" type="text" placeholder="例如：2026/12 底前 / 不急" />
+          </div>
+          <div>
+            <label class="lbl" for="money">預算範圍（選填）</label>
+            <input id="money" type="text" placeholder="例如：NT$ 2,000 - 4,000 或可討論" />
+          </div>
+        </div>
+
+        <div>
+          <label class="lbl" for="note">需求內容與參考方向 *</label>
+          <textarea id="note" required placeholder="請寫出各項目用途、風格偏好、參考連結或注意事項..."></textarea>
+        </div>
+
+        <div class="btns">
+          <button type="submit" class="btn-main" id="submitBtn">送出委託至信箱</button>
+          <button type="button" class="btn-sub" id="clearBtn">清空重選</button>
+        </div>
+      </form>
+
+      <div id="resultBox" class="result">
+        <div class="result-top" id="resultHeader">
+          <span id="sendStatus">已寄出至信箱</span>
+          <button type="button" class="btn-sub" id="copyBtn">複製備份</button>
+        </div>
+        <pre id="outText"></pre>
+      </div>
+    </section>
+    <section class="box">
+      <h2 class="sec-title" style="margin-bottom:10px;">委託須知與聯繫管道</h2>
+      <ul id="rulesList" class="rules"></ul>
+      <div id="socialLinks" class="links"></div>
+    </section>
+  </div>
 
   <script>
-    const ITEMS = [
-      { id: "item-1", title: "基礎委託項目", price: "NT$ 1,000 起" },
-      { id: "item-2", title: "進階委託項目", price: "NT$ 2,500 起" },
-      { id: "item-3", title: "客製 / 組合委託", price: "依需求報價" }
-    ];
+    const CONFIG = {
+      // ★ 改成你的 Gmail
+      receiverEmail: "your-email@gmail.com",
 
-    // ★ 請填入你用來收委託通知的 Gmail
-    const RECEIVER_EMAIL = "tkpc1999@gmail.com";
+      title: "委託企劃＆接案說明頁",
+      intro: "歡迎先看下方委託項目與須知，勾選多個項目並填寫表單後會直接寄送至我的信箱。",
+      isOpen: true,
+      openText: "開放委託中",
+      closedText: "暫停接單（可先留單）",
 
-    const selected = new Set();
-    const itemsGrid = document.getElementById("itemsGrid");
+      // 委託品項
+      plans: [
+        { id: "p1", name: "正比大頭", priceLabel: "NT$ 600 起", priceNum: 600, desc: "及肩的大頭貼，可修改一次" },
+        { id: "p2", name: "正比塗鴉", priceLabel: "NT$ 800 起", priceNum: 800, desc: "雙人X2以此類推，可修改一次" },
+        { id: "p3", name: "Q版頭", priceLabel: "NT$ 250 起", priceNum: 250, desc: "小頭創作" }
+        { id: "p4", name: "正比有背景的", priceLabel: "NT$ 1200+ 起", priceNum: 依照報價, desc: "會畫比較久，可修改兩次" }
+      ],
 
-    ITEMS.forEach((item) => {
+      // 加購 / 附加選項
+      addons: [
+        { id: "a1", name: "急件", rate: 40 },       // 加收品項小計的 30%
+        { id: "a2", name: "印刷品(無料only)", rate: 25 },   // 加收品項小計的 50%
+        { id: "a3", name: "不公開展示", priceNum: 250 }       // 0%（或依需求另計）
+],
+
+      // 委託須知
+      rules: [
+        "確認需求與交期後提供正式報價，依確認順序安排排程。",
+        "修改次數與交付格式將於報價階段共同確認。",
+        "送出後會直接寄至我的信箱，收到後將盡快回覆。"
+      ],
+
+      // 外部連結
+      links: [
+        { label: "作品集 / 社群", url: "https://example.com" },
+        { label: "E-mail", url: "mailto:tkpc1999@gmail.com" },
+        { label: "SNS", url: "https://www.plurk.com/meoyo_" }
+      ]
+    };
+
+    const chosenPlans = new Set();
+    const chosenAddons = new Set();
+
+    document.getElementById("siteTitle").textContent = CONFIG.title;
+    document.getElementById("siteIntro").textContent = CONFIG.intro;
+
+    const badge = document.getElementById("statusBadge");
+    badge.classList.toggle("closed", !CONFIG.isOpen);
+    document.getElementById("statusText").textContent = CONFIG.isOpen ? CONFIG.openText : CONFIG.closedText;
+
+    const plansGrid = document.getElementById("plansGrid");
+    CONFIG.plans.forEach((p) => {
       const card = document.createElement("div");
-      card.className = "opt-card";
+      card.className = "plan-card";
       card.innerHTML = `
-        <div class="opt-top">
-          <span>${item.title}</span>
-          <input type="checkbox" aria-label="${item
+        <div class="plan-top">
+          <span class="plan-name">${esc(p.name)}</span>
+          <input type="checkbox" aria-label="${esc(p.name)}" />
+        </div>
+        <div class="plan-price">${esc(p.priceLabel)}</div>
+        <p class="plan-desc">${esc(p.desc)}</p>
+      `;
+      const cb = card.querySelector("input");
+      card.addEventListener("click", (e) => {
+        if (e.target !== cb) cb.checked = !cb.checked;
+        toggleItem(chosenPlans, p.id, card, cb.checked);
+      });
+      plansGrid.appendChild(card);
+    });
+
+    const addonsWrap = document.getElementById("addonsWrap");
+    if (!CONFIG.addons.length) {
+      addonsWrap.style.display = "none";
+    } else {
+      CONFIG.addons.forEach((a) => {
+        const chip = document.createElement("label");
+        chip.className = "chip";
+        const tag = a.priceNum > 0 ? ` (+NT$ ${a.priceNum})` : "";
+        chip.innerHTML = `<input type="checkbox" /><span>${esc(a.name)}${tag}</span>`;
+        const cb = chip.querySelector("input");
+        cb.addEventListener("change", () => toggleItem(chosenAddons, a.id, chip, cb.checked));
+        addonsWrap.appendChild(chip);
+      });
+    }
+
+    const rulesList = document.getElementById("rulesList");
+    CONFIG.rules.forEach((r) => {
+      const li = document.createElement("li");
+      li.textContent = r;
+      rulesList.appendChild(li);
+    });
+
+    const socialLinks = document.getElementById("socialLinks");
+    CONFIG.links.forEach((l) => {
+      const a = document.createElement("a");
+      a.className = "link-pill";
+      a.href = l.url;
+      a.textContent = l.label;
+      if (!l.url.startsWith("mailto:")) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      socialLinks.appendChild(a);
+    });
+
+    function toggleItem(set, id, el, checked) {
+      checked ? set.add(id) : set.delete(id);
+      el.classList.toggle("selected", checked);
+      document.getElementById("selectErr").style.display = "none";
+      refreshBar();
+    }
+
+    function refreshBar() {
+      const pList = CONFIG.plans.filter((p) => chosenPlans.has(p.id));
+      const aList = CONFIG.addons.filter((a) => chosenAddons.has(a.id));
+      document.getElementById("countNum").textContent = pList.length;
+      const preview = document.getElementById("pricePreview");
+      if (!pList.length) {
+        preview.textContent = "尚未選擇項目";
+        return;
+      }
+      const sum = pList.reduce((s, x) => s + x.priceNum, 0) + aList.reduce((s, x) => s + x.priceNum, 0);
+      const custom = pList.some((x) => x.priceNum === 0);
+      preview.textContent = sum > 0
+        ? `預估起價：NT$ ${sum.toLocaleString()} 起${custom ? "（含另行報價項）" : ""}`
+        : "預估費用：依所選項目另行報價";
+    }
+
+    const form = document.getElementById("reqForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const resultBox = document.getElementById("resultBox");
+    const resultHeader = document.getElementById("resultHeader");
+    const sendStatus = document.getElementById("sendStatus");
+    const outText = document.getElementById("outText");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!chosenPlans.size) {
+        document.getElementById("selectErr").style.display = "block";
+        return;
+      }
+
+      const pLines = CONFIG.plans.filter((p) => chosenPlans.has(p.id)).map((p) => `・${p.name}（${p.priceLabel}）`);
+      const aNames = CONFIG.addons.filter((a) => chosenAddons.has(a.id)).map((a) => a.name);
+      const who = document.getElementById("who").value.trim();
+      const replyEmail = document.getElementById("replyEmail").value.trim();
+      const when = document.getElementById("when").value.trim() || "未填寫";
+      const money = document.getElementById("money").value.trim() || "未填寫";
+      const note = document.getElementById("note").value.trim();
+
+      outText.textContent = [
+        "【委託需求單】",
+        `聯絡方式：${who}`,
+        `回信信箱：${replyEmail}`,
+        `委託項目（共 ${pLines.length} 項）：`,
+        ...pLines,
+        `加購項目：${aNames.length ? aNames.join("、") : "無"}`,
+        `期望交期：${when}`,
+        `預算範圍：${money}`,
+        `需求說明：\n${note}`
+      ].join("\n");
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "寄送中...";
+
+      try {
+        const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(CONFIG.receiverEmail)}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            _subject: `【新委託】${who}（${pLines.length} 項）`,
+            _replyto: replyEmail,
+            聯絡方式: who,
+            回信信箱: replyEmail,
+            委託項目: pLines.join("\n"),
+            加購項目: aNames.length ? aNames.join("、") : "無",
+            期望交期: when,
+            預算範圍: money,
+            需求說明: note
+          })
+        });
+
+        const data = await res.json();
+        resultBox.classList.add("show");
+        if (res.ok && (data.success === "true" || data.success === true)) {
+          resultHeader.classList.remove("fail");
+          sendStatus.textContent = "已成功寄出至你的信箱！以下為備份：";
+        } else {
+          throw new Error(data.message || "寄送失敗");
+        }
+      } catch (err) {
+        resultBox.classList.add("show");
+        resultHeader.classList.add("fail");
+        sendStatus.textContent = "自動寄送未完成（請確認信箱是否已啟用），可先複製下方備份：";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "送出委託至信箱";
+      }
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(outText.textContent);
+        sendStatus.textContent = "已複製備份到剪貼簿！";
+      } catch {
+        sendStatus.textContent = "請手動選取上方文字複製。";
+      }
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      form.reset();
+      chosenPlans.clear();
+      chosenAddons.clear();
+      document.querySelectorAll(".plan-card, .chip").forEach((el) => {
+        el.classList.remove("selected");
+        const cb = el.querySelector("input");
+        if (cb) cb.checked = false;
+      });
+      document.getElementById("selectErr").style.display = "none";
+      resultBox.classList.remove("show");
+      refreshBar();
+    });
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>
