@@ -249,6 +249,7 @@
         <p id="siteIntro"></p>
       </div>
     </section>
+
     <section class="box">
       <div class="sec-head">
         <h2 class="sec-title">委託項目（可複選）</h2>
@@ -308,6 +309,7 @@
         <pre id="outText"></pre>
       </div>
     </section>
+
     <section class="box">
       <h2 class="sec-title" style="margin-bottom:10px;">委託須知與聯繫管道</h2>
       <ul id="rulesList" class="rules"></ul>
@@ -318,28 +320,28 @@
   <script>
     const CONFIG = {
       // ★ 改成你的 Gmail
-      receiverEmail: "your-email@gmail.com",
+      receiverEmail: "tkpc1999@gmail.com",
 
       title: "委託企劃＆接案說明頁",
-      intro: "歡迎先看下方委託項目與須知，勾選多個項目並填寫表單後會直接寄送至我的信箱。",
+      intro: "歡迎先看下方委託項目與須知，勾選多個項目並填寫表單後會直接寄送至我的信箱，會評估是否可接再依收到順序做聯繫與排單",
       isOpen: true,
       openText: "開放委託中",
       closedText: "暫停接單（可先留單）",
 
       // 委託品項
       plans: [
-        { id: "p1", name: "正比大頭", priceLabel: "NT$ 600 起", priceNum: 600, desc: "及肩的大頭貼，可修改一次" },
-        { id: "p2", name: "正比塗鴉", priceLabel: "NT$ 800 起", priceNum: 800, desc: "雙人X2以此類推，可修改一次" },
-        { id: "p3", name: "Q版頭", priceLabel: "NT$ 250 起", priceNum: 250, desc: "小頭創作" }
-        { id: "p4", name: "正比有背景的", priceLabel: "NT$ 1200+ 起", priceNum: 依照報價, desc: "會畫比較久，可修改兩次" }
+        { id: "p1", name: "A｜正比大頭", priceLabel: "NT$ 500 起", priceNum: 500, desc: "及肩大頭創作，可修改1次" },
+        { id: "p2", name: "B｜正比塗鴉", priceLabel: "NT$ 800 起", priceNum: 800, desc: "可能多少溢色/雜線，會畫到腰，雙人金額*2，簡單色塊背景。不做修改" },
+        { id: "p3", name: "C｜正比精稿", priceLabel: "NT$ 1200 起，依需求報價", priceNum: 1200, desc: "會畫比較久，有背景，可修改2次" }
       ],
 
-      // 加購 / 附加選項
+      // 加購項目（rate 為加上方勾選品項總價的百分比，四捨五入取整數；0 為不加百分比）
       addons: [
-        { id: "a1", name: "急件", rate: 40 },       // 加收品項小計的 30%
-        { id: "a2", name: "印刷品(無料only)", rate: 25 },   // 加收品項小計的 50%
-        { id: "a3", name: "不公開展示", priceNum: 250 }       // 0%（或依需求另計）
-],
+        { id: "a1", name: "急件", rate: 40 },
+        { id: "a2", name: "印刷品(無料only)", rate: 25 },
+        { id: "a3", name: "不公開展示", rate: 15 }
+        { id: "a4", name: "修改一次", rate: 10 }
+      ],
 
       // 委託須知
       rules: [
@@ -348,11 +350,10 @@
         "送出後會直接寄至我的信箱，收到後將盡快回覆。"
       ],
 
-      // 外部連結
+      // 外部連結（寄信連結建議同步改成你的 Gmail）
       links: [
-        { label: "作品集 / 社群", url: "https://example.com" },
-        { label: "E-mail", url: "mailto:tkpc1999@gmail.com" },
-        { label: "SNS", url: "https://www.plurk.com/meoyo_" }
+        { label: "Email", url: "mailto:tkpc1999@gmail.com" }
+        { label: "Plurk", url: "https://www.plurk.com/meoyo_" }
       ]
     };
 
@@ -393,8 +394,9 @@
       CONFIG.addons.forEach((a) => {
         const chip = document.createElement("label");
         chip.className = "chip";
-        const tag = a.priceNum > 0 ? ` (+NT$ ${a.priceNum})` : "";
-        chip.innerHTML = `<input type="checkbox" /><span>${esc(a.name)}${tag}</span>`;
+        chip.dataset.addonId = a.id;
+        const rateText = a.rate > 0 ? ` (+${a.rate}%)` : "";
+        chip.innerHTML = `<input type="checkbox" /><span class="chip-text">${esc(a.name)}${rateText}</span>`;
         const cb = chip.querySelector("input");
         cb.addEventListener("change", () => toggleItem(chosenAddons, a.id, chip, cb.checked));
         addonsWrap.appendChild(chip);
@@ -421,6 +423,11 @@
       socialLinks.appendChild(a);
     });
 
+    function getAddonAmount(planSum, rate) {
+      if (!rate || rate <= 0 || planSum <= 0) return 0;
+      return Math.round(planSum * (rate / 100));
+    }
+
     function toggleItem(set, id, el, checked) {
       checked ? set.add(id) : set.delete(id);
       el.classList.toggle("selected", checked);
@@ -432,15 +439,34 @@
       const pList = CONFIG.plans.filter((p) => chosenPlans.has(p.id));
       const aList = CONFIG.addons.filter((a) => chosenAddons.has(a.id));
       document.getElementById("countNum").textContent = pList.length;
+
+      const planSum = pList.reduce((s, x) => s + x.priceNum, 0);
+
+      CONFIG.addons.forEach((a) => {
+        const labelSpan = addonsWrap.querySelector(`[data-addon-id="${a.id}"] .chip-text`);
+        if (!labelSpan) return;
+        if (!a.rate || a.rate <= 0) {
+          labelSpan.textContent = a.name;
+        } else if (planSum > 0) {
+          const amt = getAddonAmount(planSum, a.rate);
+          labelSpan.textContent = `${a.name} (+${a.rate}% / +NT$ ${amt.toLocaleString()})`;
+        } else {
+          labelSpan.textContent = `${a.name} (+${a.rate}%)`;
+        }
+      });
+
       const preview = document.getElementById("pricePreview");
       if (!pList.length) {
         preview.textContent = "尚未選擇項目";
         return;
       }
-      const sum = pList.reduce((s, x) => s + x.priceNum, 0) + aList.reduce((s, x) => s + x.priceNum, 0);
-      const custom = pList.some((x) => x.priceNum === 0);
-      preview.textContent = sum > 0
-        ? `預估起價：NT$ ${sum.toLocaleString()} 起${custom ? "（含另行報價項）" : ""}`
+
+      const addonSum = aList.reduce((s, x) => s + getAddonAmount(planSum, x.rate), 0);
+      const total = planSum + addonSum;
+      const hasCustomPlan = pList.some((x) => x.priceNum === 0);
+
+      preview.textContent = total > 0
+        ? `預估起價：NT$ ${total.toLocaleString()} 起${hasCustomPlan ? "（含另行報價項）" : ""}`
         : "預估費用：依所選項目另行報價";
     }
 
@@ -458,8 +484,24 @@
         return;
       }
 
-      const pLines = CONFIG.plans.filter((p) => chosenPlans.has(p.id)).map((p) => `・${p.name}（${p.priceLabel}）`);
-      const aNames = CONFIG.addons.filter((a) => chosenAddons.has(a.id)).map((a) => a.name);
+      const pList = CONFIG.plans.filter((p) => chosenPlans.has(p.id));
+      const aList = CONFIG.addons.filter((a) => chosenAddons.has(a.id));
+      const planSum = pList.reduce((s, x) => s + x.priceNum, 0);
+      const addonSum = aList.reduce((s, x) => s + getAddonAmount(planSum, x.rate), 0);
+      const total = planSum + addonSum;
+      const hasCustomPlan = pList.some((x) => x.priceNum === 0);
+
+      const pLines = pList.map((p) => `・${p.name}（${p.priceLabel}）`);
+      const aDetails = aList.map((a) => {
+        if (!a.rate || a.rate <= 0) return a.name;
+        const amt = getAddonAmount(planSum, a.rate);
+        return planSum > 0 ? `${a.name}（+${a.rate}%，+NT$ ${amt.toLocaleString()}）` : `${a.name}（+${a.rate}%）`;
+      });
+
+      const estimateText = total > 0
+        ? `NT$ ${total.toLocaleString()} 起${hasCustomPlan ? "（含另行報價項）" : ""}`
+        : "依所選項目另行報價";
+
       const who = document.getElementById("who").value.trim();
       const replyEmail = document.getElementById("replyEmail").value.trim();
       const when = document.getElementById("when").value.trim() || "未填寫";
@@ -472,7 +514,8 @@
         `回信信箱：${replyEmail}`,
         `委託項目（共 ${pLines.length} 項）：`,
         ...pLines,
-        `加購項目：${aNames.length ? aNames.join("、") : "無"}`,
+        `加購項目：${aDetails.length ? aDetails.join("、") : "無"}`,
+        `系統預估：${estimateText}`,
         `期望交期：${when}`,
         `預算範圍：${money}`,
         `需求說明：\n${note}`
@@ -494,7 +537,8 @@
             聯絡方式: who,
             回信信箱: replyEmail,
             委託項目: pLines.join("\n"),
-            加購項目: aNames.length ? aNames.join("、") : "無",
+            加購項目: aDetails.length ? aDetails.join("、") : "無",
+            系統預估: estimateText,
             期望交期: when,
             預算範圍: money,
             需求說明: note
