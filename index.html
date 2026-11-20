@@ -131,15 +131,15 @@
       cursor: pointer;
     }
 
-    .form-grid {
-      display: grid;
-      gap: 12px;
-    }
-
     .two-col {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 12px;
+      margin-top: 12px;
+    }
+
+    .field {
+      margin-top: 12px;
     }
 
     label {
@@ -169,7 +169,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 4px;
+      margin-top: 14px;
     }
 
     button {
@@ -207,7 +207,7 @@
     }
 
     section[aria-label="委託摘要"] {
-      margin-top: 14px;
+      margin-top: 16px;
       padding: 14px;
       border-radius: 10px;
       background: var(--surface-alt);
@@ -218,6 +218,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 8px;
       font-size: 0.86rem;
@@ -241,9 +242,16 @@
       font-size: 0.88rem;
     }
 
+    .confirm-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
     a.mail-btn {
       display: inline-block;
-      margin-top: 10px;
       font-size: 0.88rem;
       font-weight: 600;
       color: var(--accent);
@@ -260,7 +268,7 @@
     <header>
       <div>
         <h1>委託資訊與需求表</h1>
-        <p>可直接勾選多個想委託的項目，填寫後會寄送至指定信箱並產生摘要。</p>
+        <p>勾選項目並填寫資料後，先產生內容確認，再一鍵寄送至信箱。</p>
       </div>
       <div class="status-pill">
         <span class="status-dot" aria-hidden="true"></span>
@@ -296,26 +304,29 @@
         </div>
       </div>
 
-      <div>
+      <div class="field">
         <label for="detailInput">需求說明 *</label>
         <textarea id="detailInput" required placeholder="請簡述需求內容、風格或參考方向..."></textarea>
       </div>
 
       <div class="actions">
-        <button type="submit" class="btn-primary" id="submitBtn">送出委託並寄信</button>
+        <button type="submit" class="btn-primary">產生委託摘要（確認內容）</button>
         <button type="reset" class="btn-secondary">清空</button>
       </div>
     </form>
 
-    <p class="notice">送出後會直接寄送至你的 Email，下方也會同步顯示委託摘要方便複製或手動寄送。</p>
+    <p class="notice">按下「產生委託摘要」後會先顯示確認內容，核對無誤再按「確認無誤，寄出至 Email」即可寄送。</p>
 
     <section aria-label="委託摘要" id="summarySection" hidden>
       <div class="summary-head" id="summaryHead">
-        <span role="status" id="statusMessage">已產生委託摘要（可複製貼給接案者）</span>
+        <span role="status" id="statusMessage">請確認下方委託內容，無誤後即可寄出至信箱</span>
         <button type="button" class="btn-secondary" id="copySummaryBtn">複製摘要</button>
       </div>
       <pre id="summaryOutput"></pre>
-      <a id="mailtoAction" class="mail-btn" href="mailto:">開啟預設信箱寄出此需求 →</a>
+      <div class="confirm-bar">
+        <button type="button" class="btn-primary" id="confirmSendBtn">確認無誤，寄出至 Email</button>
+        <a id="mailtoAction" class="mail-btn" href="mailto:">或開啟預設信箱寄出 →</a>
+      </div>
     </section>
   </main>
 
@@ -338,71 +349,4 @@
       card.innerHTML = `
         <div class="opt-top">
           <span>${item.title}</span>
-          <input type="checkbox" aria-label="${item.title}" />
-        </div>
-        <div class="opt-price">${item.price}</div>
-      `;
-      const cb = card.querySelector("input");
-      card.addEventListener("click", (e) => {
-        if (e.target !== cb) cb.checked = !cb.checked;
-        if (cb.checked) {
-          selected.add(item.id);
-          card.classList.add("active");
-        } else {
-          selected.delete(item.id);
-          card.classList.remove("active");
-        }
-      });
-      itemsGrid.appendChild(card);
-    });
-
-    const form = document.getElementById("commissionForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const summarySection = document.getElementById("summarySection");
-    const summaryHead = document.getElementById("summaryHead");
-    const summaryOutput = document.getElementById("summaryOutput");
-    const statusMessage = document.getElementById("statusMessage");
-    const mailtoAction = document.getElementById("mailtoAction");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const picked = ITEMS.filter((i) => selected.has(i.id)).map((i) => `・${i.title}（${i.price}）`);
-      const name = document.getElementById("nameInput").value.trim();
-      const replyEmail = document.getElementById("emailInput").value.trim();
-      const deadline = document.getElementById("deadlineInput").value.trim() || "未填寫";
-      const budget = document.getElementById("budgetInput").value.trim() || "未填寫";
-      const detail = document.getElementById("detailInput").value.trim();
-
-      const result = [
-        "【委託需求單】",
-        `聯絡人／方式：${name}`,
-        `回信 Email：${replyEmail}`,
-        `勾選項目：${picked.length ? "\n" + picked.join("\n") : "未勾選"}`,
-        `期望交期：${deadline}`,
-        `預算範圍：${budget}`,
-        `需求說明：\n${detail}`
-      ].join("\n");
-
-      summaryOutput.textContent = result;
-      summarySection.hidden = false;
-
-      const subject = encodeURIComponent(`委託洽詢 - ${name}`);
-      const body = encodeURIComponent(result);
-      mailtoAction.href = `mailto:${encodeURIComponent(RECEIVER_EMAIL)}?subject=${subject}&body=${body}`;
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "寄送中...";
-
-      try {
-        const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(RECEIVER_EMAIL)}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            _subject: `【委託洽詢】${name}`,
-            _replyto: replyEmail,
-            聯絡人與方式: name,
-            回信Email: replyEmail,
-            勾選項目: picked.length ? picked.join(" / ") : "未
+          <input type="checkbox" aria-label="${item
